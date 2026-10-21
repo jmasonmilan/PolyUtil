@@ -1,0 +1,32 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package polyutilgh.readers;
+
+import polyutilgh.filters.Filter;
+
+/**
+ *
+ * @author mason
+ */
+public abstract class InReader {
+    protected Filter nextOne;
+    public InReader(Filter in) {
+        nextOne = in;
+    }
+    public abstract boolean write(String s);
+    public abstract void close();
+    protected void usage() {
+        System.err.println("should not be here " + this.getClass().getSimpleName());
+        System.exit(1);
+    }
+    protected void usage(String param) {
+        System.err.println("should not be here " + this.getClass().getSimpleName() + " " + param);
+        System.exit(1);
+    }    
+    public void runReader() {
+        
+    }
+}

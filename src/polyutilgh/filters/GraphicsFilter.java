@@ -168,7 +168,7 @@ public class GraphicsFilter extends OnlyPolyFilter {
             ArrayList<Polyform> newList = copy(list, i, rows * numHoriz);
             display(newList,   numHoriz,  name + "-" + polySize + "-" + i);
             if (html) {
-                String htm = "html\\" + name + "-" + i + ".htm";
+                String htm = "html" + File.separator + name + "-" + i + ".htm";
                 try {
                     if (i < list.size() - 1)
                         whtml(name, name, name , i, i + 1, polySize);
@@ -188,22 +188,21 @@ public class GraphicsFilter extends OnlyPolyFilter {
         }
     }
     void whtml(String name, String current, String other, int i, int j, int polySize) throws Exception {
-        String htm = "html\\" + current + "-" + i + ".htm";
+        String htm = "html" + File.separator + current + "-" + i + ".htm";
                     PrintWriter writer = new PrintWriter(htm, "UTF-8");
                     
                     writer.println("<html>");
                     writer.println("<head>");
-                    //if (i < list.size() -1 ) {
-                        writer.println("<meta http-equiv=\"refresh\" content=\"" + time + ";url=" + other + "-" + (j) + ".htm\" />");
-                    //}
+                    
+                    writer.println("<meta http-equiv=\"refresh\" content=\"" + time + ";url=" + other + "-" + (j) + ".htm\" />");
+                   
                     writer.println("</head>");
                     writer.println("<body>");
-                    //writer.println("<audio src=\"..\\midinotes\\a3.mid\" autoplay=\"autoplay\" loop=\"loop\"></audio>");
-                    writer.println("<img src=\"..\\png\\" + name + "-" + polySize + "-" + i + "-1.png\" />");
+                    writer.println("<img src=\".." + File.separator + "png" + File.separator + name + "-" + polySize + "-" + i + "-1.png\" />");
                     writer.println("</body>");
                     writer.println("</html>");
 
-                    writer.close();          
+                    writer.close();
     }
     private ArrayList<Polyform> copy(ArrayList<Polyform> inList, int from, int forMax) {
         ArrayList<Polyform> ret = new ArrayList<>();
@@ -305,7 +304,7 @@ public class GraphicsFilter extends OnlyPolyFilter {
     }
     void makeGif(GraphicsParameters gp) throws Exception {
         BufferedImage first = ImageIO.read(new File(imageFiles.get(0)));
-        String dest = imageType + "\\" + seqName  + ".gif";
+        String dest = imageType + File.separator + seqName  + ".gif";
         ImageOutputStream output = new FileImageOutputStream(new File(dest));
         System.err.println("build gif");
         GifMaker writer = new GifMaker(output, first.getType(), delay, loop);

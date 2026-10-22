@@ -42,7 +42,7 @@ public class ReorderFilter extends OnlyPolyFilter {
         return true;
     }
     String filename(int size) {
-        return "various\\" + key + "-tmp-" + size + ".txt";
+        return "various" + File.separator + key + "-tmp-" + size + ".txt";
     }
     public void close() {
         int count = 0;

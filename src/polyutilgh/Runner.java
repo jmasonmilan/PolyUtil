@@ -1,10 +1,5 @@
  package polyutilgh;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 import polyutilgh.readers.*;
 import polyutilgh.filters.*;
@@ -66,13 +61,7 @@ public class Runner {
             nextOne = fm.make(bits[0], lastOne, params);
             filterList.add(nextOne);
             lastOne = nextOne;
-            /*
-            if ((n = testCMD(args[i],"bitrisect")) > 0) {
-                String in = args[i].substring(n);
-                nextOne = new BiTrisectableFilter(lastOne, in);
-                filterList.add(nextOne);
-                lastOne = nextOne;
-            } */ 
+            
 
             // 
         }

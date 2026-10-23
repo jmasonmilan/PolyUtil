@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package polyutilgh;
 
 import java.lang.reflect.Constructor;
@@ -20,6 +15,11 @@ public class FilterMaker {
     }
     public Filter make(String filter, Filter nextOneParam, String params) {
         Object object = null;
+        String first = filter.substring(0, 1);
+        if (!first.equals(first.toUpperCase())) {
+            System.err.println("First letter not uppercase : " + filter);
+            System.exit(1);
+        }
         try {
             Class<?> c = Class.forName("polyutilgh.filters." + filter + "Filter");
             Constructor<?> cons;

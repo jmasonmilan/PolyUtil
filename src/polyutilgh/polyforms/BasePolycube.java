@@ -105,6 +105,15 @@ public abstract class BasePolycube extends PolyformWC3D {
         ret += y - 1;
         return ret;
     }
+    public  int getNumberOfAdjacentCells() {
+        return 6;
+    }
+    public  Coord getNewCoord(Coord c, int i) {
+        CoordTriplet cp = (CoordTriplet)c;
+        return cp.add(deltaX[i], deltaY[i], deltaZ[i]);
+        
+    }
+    
     public String drawing() {
         return "";
     }
@@ -631,8 +640,11 @@ public abstract class BasePolycube extends PolyformWC3D {
         int i = array.indexOf(cp);
         if (pointedCell != null && i == pointedCell.intValue())
             return gp.red;
-        else
+        else if (cp.getDisplayColour() != null)
+            return cp.getDisplayColour();
+        else {
             return gp.green;
+        }
        
     }
     

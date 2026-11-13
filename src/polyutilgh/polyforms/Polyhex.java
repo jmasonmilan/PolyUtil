@@ -3,6 +3,7 @@ package polyutilgh.polyforms;
 import java.awt.Color;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import polyutilgh.Coord;
 import polyutilgh.CoordPair;
 import polyutilgh.GraphicsParameters;
 import polyutilgh.PolySet;
@@ -79,6 +80,15 @@ public  class Polyhex extends PolyformWC3 {
         v = formula(t);
         v += y - 1; // 2
         return v;
+    }
+    public  Coord getNewCoord(Coord c, int i) {
+        CoordPair cp = (CoordPair)c;
+        return cp.add(deltaX[i], deltaY[i]);
+        
+    }
+    
+    public  int getNumberOfAdjacentCells() {
+        return 6;
     }
     
     int formula(int t) {
@@ -299,7 +309,9 @@ public  class Polyhex extends PolyformWC3 {
             dx++;
         Polyhex p = (Polyhex)maker();
         for (CoordPair cp : array) {
-            p.insert(cp.add(-dx, -dy));
+            CoordPair ncp = cp.add(-dx, -dy);
+            ncp.setDisplayColour(cp.getDisplayColour());
+            p.insert(ncp);
         }
         p.adjustToSextantLR();
         if (seal)
@@ -541,7 +553,7 @@ public  class Polyhex extends PolyformWC3 {
         if (!gp.filling)
             display(gp, cp, Color.WHITE);
         else
-            display(gp, cp, null);
+            display(gp, cp, cp.getDisplayColour());
     }
     void display(GraphicsParameters gp, CoordPair cp, Color c) {
              // here, top means bottom and vice versa

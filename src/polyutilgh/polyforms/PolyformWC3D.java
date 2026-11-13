@@ -75,8 +75,12 @@ public abstract class PolyformWC3D extends WCCommon {
     }
     public PolyformWC3D copy() {
         PolyformWC3D np = (PolyformWC3D)(maker());
-        for (CoordTriplet cp : array)
-            np.insert(new CoordTriplet(cp.getX(), cp.getY(), cp.getZ()));
+        for (CoordTriplet cp : array) {
+            CoordTriplet ncp = new CoordTriplet(cp.getX(), cp.getY(), cp.getZ());
+            ncp.setDisplayColour(cp.getDisplayColour());
+            np.insert(ncp);
+            
+        }
         return np;
     }    
     public int getDepth() {
@@ -226,6 +230,16 @@ public abstract class PolyformWC3D extends WCCommon {
     public CoordTriplet getCoords(int i) {
         return array.get(i);
     }
+    public Coord getC(int i) {
+        return getCoords(i);
+    }
+    public  boolean contains(Coord c) {
+        return contains((CoordTriplet)c);
+    }
+    public  void insert(Coord c) {
+        insert((CoordTriplet)c);
+    }
+    
     /**
      * 
      * @param cp

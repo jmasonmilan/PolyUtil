@@ -12,6 +12,7 @@ import polyutilgh.polygons.*;
  * @author jmason
  */
 public class Polyomino extends BasePolyomino {
+    boolean useFixed, symFlag, asymFlag;
     int[] dxtab = {0, 0, 1, -1}, dytab = {1, -1, 0, 0};
     public Polyomino(BigInteger inValue) {
         rep = inValue;
@@ -97,84 +98,177 @@ public class Polyomino extends BasePolyomino {
         sealed = true;    
         */
     }
-    public PolySet getBiTrisect(int number) {
-        PolySet ps = new PolySet();
-        ArrayList<Polyomino> fixed = getFixedList();
-        for (Polyomino f : fixed)
-            getBiTrisect(ps, f);
-        
-        for (int n = 3; n <= number; n++) {
-            PolySet nps = new PolySet();
-            for (int i = 0; i < ps.size(); i++) {
-                String s = ps.gets(i);
-                Polyomino p = new Polyomino(new BigInteger(s));
-                for (Polyomino f : fixed)
-                    p.getBiTrisect(nps, f);
-            }
-            ps = nps;
-        }
-        
-        return ps;
+    public void setUseFixed() {
+        useFixed = true;
     }
-    void getBiTrisect(PolySet ps, Polyomino f) {
-        ArrayList<CoordPair> first = new ArrayList<>();
-        for (CoordPair cp : array)
-            for (int i = 0; i < 4; i++)
-                getBiTrisect(ps, cp, i, f, first);
-        
+    public void setSym() {
+        symFlag = true;
+    }
+    public void setAsym() {
+        asymFlag = true;
     }
     /*
-    public PolySet getBiTrisect(int number) {
-        PolySet ps = new PolySet();
-        ArrayList<Polyomino> fixed = getFixedList();
-        for (CoordPair cp : array)
-            getBiTrisect(ps, cp, fixed);*/
+    State of the art
+    
+    useFixed = true optim = false OK
+    useFixed = true optim = true OK
+    useFixed = false optim = false OK
+    useFixed = false optim = true OK
+    
+    */
+    boolean dbgbi;
+    public void setDebug() {
+        dbgbi = true;
+    }
+    PolySet tmp;
+    String dbs1, dbs2, dbs3, dbs4;
+    public BiTrisectableReturn getBiTrisect(int number, boolean optim) {
+        //System.err.println("1 " + optim);
+        BiTrisectableReturn btr = new BiTrisectableReturn();
+        tmp = new PolySet();
+        Polyomino rot180 = null;
+        if (number > 2)
+            optim = false;
+        if (optim) {
+            if (symFlag)
+                optim = false;
+            else if (asymFlag)
+                ; // noop
+            else
+                optim = this.asym();
+        }
+        if (optim && useFixed)
+             rot180 = this.rotate180();
+        
+        
+        ArrayList<WCCommon> fixed = null;
+        if (useFixed) {
+            
+            fixed = getFixedList();
+            for (Polyform fp : fixed) {
+                Polyomino f = (Polyomino)fp;
+                int[] mult = new int[]{1, 1, 1, 1};
+                if (optim && f.getRep().equals(rot180.getRep()))
+                    mult = new int[]{2, 2, 2, 2};
+                getBiTrisect(btr, f, optim, mult, new int[]{0, 1, 2, 3});
+        }            
+        } else {
+            //System.err.println("this " + drawing());
+            int[] mult = new int[]{1, 1, 1, 1};
+            
+            if (optim)
+                mult = new int[]{2, 2, 2, 2};
+            
+            dbs1 = "0 degrees";
+            getBiTrisect(btr, this, optim, mult, new int[]{0, 1});
+            Polyomino rot90 = this.rotate90clockwise(false);
+            dbs1 = "90 degrees";
+            getBiTrisect(btr, rot90, optim, mult, new int[]{0, 1, 2, 3});
+            rot90 = rot90.rotate90clockwise(false);
+            // now at 180 degrees
+            dbs1 = "180 degrees";
+            getBiTrisect(btr, rot90, optim, mult, new int[]{0, 1, 2, 3});
+            //rot90 = rot90.rotate90();
+            //getBiTrisect(btr, rot90, optim, 1, new int[]{0, 1, 2, 3});
+
+            Polyomino mirrorV = this.reflectV(false);
+            dbs1 = "V 0 degrees";
+            getBiTrisect(btr, mirrorV, optim, new int[]{2, 1, 1, 1}, new int[]{0, 1, 3});
+            rot90 = mirrorV.rotate90clockwise(false);
+            dbs1 = "V 90 degrees";
+            getBiTrisect(btr, rot90, optim, mult, new int[]{0, 1 });
+            rot90 = rot90.rotate90clockwise(false);
+            dbs1 = "V 180 degrees";
+            getBiTrisect(btr, rot90, optim, new int[]{1, 2, 1, 1}, new int[]{0, 1, 2});
+            rot90 = rot90.rotate90clockwise(false);
+            dbs1 = "V 270 degrees";
+            getBiTrisect(btr, rot90, optim, mult, new int[]{0,  2});
+        }
+        
         /*
+        int y = lowest(1);
+        int x = leftmost(1);
+        
+        getBiTrisect(btr,  0,  y,  mirrorV,  getWidth(),  y, null, optim, 1);
+        
+        Polyomino mirrorH = this.reflectH();
+        
+        getBiTrisect(btr,  x,  0,  mirrorH,  x,  getHeight(), null, optim, 1);
+        */
+        /*
+        Polyomino rot180 = null;
+        if (optim) {
+            rot180 = this.rotate180();
+            
+        }
+        */
+        /*
+        
+        */
+        
+        if (optim /* && useFixed */) {
+            int delta = 0;
+            if (countTop() == 1)
+                delta++;
+            if (countBottom() == 1)
+                delta++;
+            if (countLeft() == 1)
+                delta++;
+            if (countRight() == 1)
+                delta++;
+            btr.increment(delta);
+            
+        }
+        
+        
         for (int n = 3; n <= number; n++) {
-            PolySet nps = new PolySet();
+            PolySet ps = btr.getPS();
+            BiTrisectableReturn nbtr = new BiTrisectableReturn();
             for (int i = 0; i < ps.size(); i++) {
                 String s = ps.gets(i);
                 Polyomino p = new Polyomino(new BigInteger(s));
-                for (CoordPair cp : p.array)
-                    p.getBiTrisect(nps, cp, fixed);
+                for (Polyform fp : fixed) {
+                    Polyomino f = (Polyomino)fp;
+                    p.getBiTrisect(nbtr, f, false, new int[]{1, 1, 1, 1}, new int[]{0, 1, 2, 3});
+                
+                }
             }
-            ps = nps;
-        }
-        */
-        /* return ps;
-    } 
-    void getBiTrisect(PolySet ps, CoordPair cp, ArrayList<Polyomino> fixed) {
-        for (int i = 0; i < 4; i++)
-            getBiTrisect(ps, cp, i, fixed);
-    }
-    void getBiTrisect(PolySet ps, CoordPair cp, int i, ArrayList<Polyomino> fixed) {
-        int nx = cp.getX() + deltaX[i];
-        int ny = cp.getY() + deltaY[i];
-        if (contains(nx, ny))
-            return;
-        for (Polyomino f : fixed) {
-            getBiTrisect(ps, nx, ny, f);
+            btr = nbtr;
         }
         
-    } */
-    void getBiTrisect(PolySet ps, CoordPair cp, int i, Polyomino f, ArrayList<CoordPair> first) {
-        int nx = cp.getX() + deltaX[i];
-        int ny = cp.getY() + deltaY[i];
-        if (contains(nx, ny))
-            return;
-        
-        getBiTrisect(ps, nx, ny, f, first);
-        
+        return btr;
+    }
+    void getBiTrisect(BiTrisectableReturn btr, Polyomino f, boolean optim, int[] mult, int[] delta) {
+        //System.err.println("2 " + optim);
+        //System.err.println("f " + f.drawing());
+        ArrayList<CoordPair> first = new ArrayList<>();
+        for (CoordPair cp : array)
+            for (int i = 0; i < delta.length; i++) {
+                //getBiTrisect(btr, cp, i, f, first, optim, mult);
+                int nx = cp.getX() + deltaX[delta[i]];
+                int ny = cp.getY() + deltaY[delta[i]];
+                if (contains(nx, ny))
+                    continue;
+
+                getBiTrisect(btr, nx, ny, f, first,  optim, mult[delta[i]]);
+            }
         
     }
-    void getBiTrisect(PolySet ps, int nx, int ny, Polyomino f, ArrayList<CoordPair> first) {
+    
+    void getBiTrisect(BiTrisectableReturn btr, int nx, int ny, Polyomino f, ArrayList<CoordPair> first, 
+            boolean optim, int mult) {
+        //System.err.println("4 " + optim);
         for (int i = 0; i < f.size(); i++)
-            getBiTrisect(ps, nx, ny, f, f.array.get(i).getX(), f.array.get(i).getY(), first);
+            getBiTrisect(btr, nx, ny, f, f.array.get(i).getX(), f.array.get(i).getY(), first,  optim, mult);
         
     }
-    void getBiTrisect(PolySet ps, int nx, int ny, Polyomino f, int fx, int fy, ArrayList<CoordPair> first) {
+    void getBiTrisect(BiTrisectableReturn btr, int nx, int ny, Polyomino f, int fx, int fy, ArrayList<CoordPair> first, 
+            boolean optim, int mult) {
+        //System.err.println("5 " + optim);
         Polyomino np = new Polyomino();
         np = (Polyomino)(this.copy());
+        int suma = 0; // number of edges of new polyomino adjacent to old one
+        int sumsa = 0; // number of squares of new polyomino adjacent to old one
         for (int i = 0; i < f.size(); i++) {
             CoordPair fcp = f.array.get(i);
             int x = fcp.getX(), y = fcp.getY();
@@ -184,13 +278,92 @@ public class Polyomino extends BasePolyomino {
                 if (first.contains(ncp))
                     return;
                 first.add(ncp);
+                   
+            } 
+            if (optim) {
+                int a = np.adjacencies(ncp, this.size());
+                suma += a;
+                if (a > 0)
+                    sumsa++;
             }
+            
             if (np.contains(ncp))
                 return;
             np.insert(ncp);
+        } 
+        /*
+        changing the following line to sumsa != 1 would allow to optimise a aingle square touching multiple
+        squares; but this causes a divide by 2 to fail
+        */
+        if (suma != 1)
+            optim = false;
+        /*
+        Polyomino dbg = (Polyomino)(np.align(true));
+        String s = dbg.getUnique();
+        BigInteger bi = new BigInteger(s);
+        Polyomino dbg1 = new Polyomino(bi);
+        if (dbg1.getRep().toString().equals("4335")) {
+            int here = 1;
+            System.err.println("this " + this.drawing());
+            System.err.println("dbg  " + dbg.drawing());
+            System.err.println(optim + "");
+            System.err.println(nx + " " + ny + " " + fx + " " + fy);
         }
-        Polyform nnp = np.align(true);
-        ps.addUniques(nnp);
+        */
+        if (optim) { 
+            btr.increment(mult);
+            /*
+            if (this.dbgbi) {
+                Polyform nnp = np.align(true);
+                String s = nnp.getUnique();
+                Polyomino nu = new Polyomino(new BigInteger(s));
+                
+                //System.err.println(nu.getRep().toString());
+                String q = nu.getRep().toString();
+                if (q.equals("72616") || q.equals("40148") || q.equals("5612")) {
+                    
+                    System.err.println("mult = " + mult);
+                } else if (mult == 1) {
+                    System.err.println(nnp.drawing());
+                    System.err.println("mult = " + mult);
+                }
+            }
+            */
+            /*
+            if (!useFixed) {
+                Polyform nnp = np.align(true);
+                String s = nnp.getUnique();
+                Polyomino nu = new Polyomino(new BigInteger(s));
+                if (s.equals("40148")) {
+                    System.err.println("this " + this.drawing());
+                    System.err.println("f " + f.drawing());
+                    System.err.println("nnp " + nnp.drawing());
+                    System.err.println("!!!!!!!!!!!!!! " + dbs1);
+                }
+
+                boolean tmpf = tmp.addUniques(nu);
+                if (!tmpf)
+                    System.err.println("!!!!!!!!!!!!!! " + nnp.getRep().toString());
+            } */
+        } else {
+            
+            Polyomino nnp = (Polyomino)(np.align(true));
+            /*
+            if (dbgbi)
+                btr.getPS().adds(nnp.getNonCanonicUnique()); // not much better
+            else */
+                btr.getPS().addUniques(nnp);
+           
+            
+            //System.err.println("new " + nnp.drawing());
+        }
+    }
+    int adjacencies(CoordPair cp, int len) {
+        int ret = 0;
+        for (int i = 0; i < len; i++)
+            if (areAdjacent(cp, array.get(i)))
+                ret++;
+        return ret;
     }
     void build(BigInteger rep) {
         innerBuild(rep);
@@ -381,8 +554,7 @@ public class Polyomino extends BasePolyomino {
         Polyomino halo = getHalo();
         return halo.isPerfectHalo();
     }
-    int deltaX[] =  {0, 0, 1, -1};
-    int deltaY[] =  {1, -1, 0, 0};    
+
     public Polyomino getHalo() {
         Polyomino halo = new Polyomino();
         for (int i = 0; i < size(); i++) {
@@ -451,14 +623,46 @@ public class Polyomino extends BasePolyomino {
         }
         return gp.green;
     }
-    
+    // anticlockwise
     public Polyomino rotate90() {
+        return rotate90(true);
+    }
+    public Polyomino rotate90(boolean seal) {
         Polyomino ret = maker();
         int h = this.getHeight();
         for (int i = 0 ; i < array.size(); i++) {
             ret.insert(array.get(i).newValues(h + 1 - array.get(i).getY(), array.get(i).getX()));
         }
-        ret.seal();
+        if (seal)
+            ret.seal();
+        return ret;
+    }
+    // temp clockwise
+    public Polyomino rotate90clockwise(boolean seal) {
+        //return rotate180(false).rotate90(seal);
+        Polyomino ret = maker();
+        int w = this.getWidth();
+        for (int i = 0 ; i < array.size(); i++) {
+            ret.insert(array.get(i).newValues(array.get(i).getY(), w + 1 - array.get(i).getX()));
+        }
+        if (seal)
+            ret.seal();
+        return ret;
+    }
+    public Polyomino rotate90clockwise() {
+        return rotate90clockwise(true);
+    }
+    public Polyomino rotate180() {
+        return rotate180(true);
+    }
+    public Polyomino rotate180(boolean seal) {
+        Polyomino ret = maker();
+        int h = this.getHeight(), w = this.getWidth();
+        for (int i = 0 ; i < array.size(); i++) {
+            ret.insert(array.get(i).newValues(w + 1 - array.get(i).getX(), h + 1 - array.get(i).getY()));
+        }
+        if (seal)
+            ret.seal();
         return ret;
     }
     public Polyomino reflectH() {
@@ -471,12 +675,16 @@ public class Polyomino extends BasePolyomino {
         return ret;
     }
     public Polyomino reflectV() {
+        return reflectV(true);
+    }
+    public Polyomino reflectV(boolean seal) {
         Polyomino ret = maker();
         int w = this.getWidth();
         for (int i = 0 ; i < array.size(); i++) {
             ret.insert(array.get(i).newValues(w + 1 - array.get(i).getX(), array.get(i).getY()));
         }
-        ret.seal();
+        if (seal)
+            ret.seal();
         return ret;
     }
     public Polyomino reflectD() {
@@ -688,20 +896,22 @@ public class Polyomino extends BasePolyomino {
         }
         
     }
+    /*
     public ArrayList<Polyomino> getFixedList() {
         ArrayList<Polyomino> ret = new ArrayList<>();
         PolySet ps = this.getFixed();
         for (int i = 0; i < ps.size(); i++)
             ret.add(new Polyomino(new BigInteger(ps.gets(i))));
         return ret;
-    }
+    } */
     public boolean hasFactor(Polyomino divisor) {
-        ArrayList<Polyomino> dList = divisor.getFixedList();
+        ArrayList<WCCommon> dList = divisor.getFixedList();
         return hasFixedFactor(dList);
        
     }
-    public boolean hasFixedFactor(ArrayList<Polyomino> dList) {
-        mainloop: for (Polyomino divisor : dList) {
+    public boolean hasFixedFactor(ArrayList<WCCommon> dList) {
+        mainloop: for (WCCommon p : dList) {
+            Polyomino divisor = (Polyomino)p;
             CoordPair thisTopLeft = this.findTopLeft();
             CoordPair divisorTopLeft = divisor.findTopLeft();
             int tx = thisTopLeft.getX(), ty = thisTopLeft.getY();
@@ -796,27 +1006,41 @@ Size of polyomino	predominant squares	minor squares	bias
 4n+4                    3n+3                    n+1             2n+2
     
     */
-
+    // assume sorted
+    int compare(Polyomino other) {
+        for (int i = 0; i < array.size(); i++) {
+            int r = array.get(i).compare(other.array.get(i));
+            if (r != 0)
+                return r;
+        }
+        return 0;
+    }
+    void sort() {
+        Collections.sort(array, new Comparator<CoordPair>() {
+            public int compare(CoordPair p1, CoordPair p2) {
+                return p1.compare(p2);
+            }
+        });
+    }
     public String getUnique() {
         
         BigInteger rep1 = this.getRep();
-        // for debugging
         
-        Polyomino x1 = maker(rep1);
-        Polyomino y1 = x1.rotate90();
-        BigInteger z2 = y1.getRep();
-        Polyomino x2 = maker(z2);
-        Polyomino y2 = x2.rotate90();
-        BigInteger z3 = y2.getRep();
+        Polyomino p2 = this.rotate90();
+        Polyomino p3 = p2.rotate90();
+        Polyomino p4 = p3.rotate90();
+        Polyomino p5 = this.reflectV();
+        Polyomino p6 = p5.rotate90();
+        Polyomino p7 = p6.rotate90();
+        Polyomino p8 = p7.rotate90();
         
-        
-        BigInteger rep2 = maker(rep1).rotate90().getRep();
-        BigInteger rep3 = maker(rep2).rotate90().getRep();
-        BigInteger rep4 = maker(rep3).rotate90().getRep();
-        BigInteger rep5 = maker(rep4).reflectH().getRep();
-        BigInteger rep6 = maker(rep5).rotate90().getRep();
-        BigInteger rep7 = maker(rep6).rotate90().getRep();
-        BigInteger rep8 = maker(rep7).rotate90().getRep();
+        BigInteger rep2 = p2.getRep();
+        BigInteger rep3 = p3.getRep();
+        BigInteger rep4 = p4.getRep();
+        BigInteger rep5 = p5.getRep();
+        BigInteger rep6 = p6.getRep();
+        BigInteger rep7 = p7.getRep();
+        BigInteger rep8 = p8.getRep();
         
         if (rep1.compareTo(rep2) > 0)
             rep1 = rep2;
@@ -835,6 +1059,44 @@ Size of polyomino	predominant squares	minor squares	bias
         
         return rep1.toString();
     }   
+    /* not useful
+    public String getNonCanonicUnique() {
+        Polyomino best = this;
+        this.sort();
+        
+        Polyomino p2 = this.rotate90(false);
+        p2.sort();
+        Polyomino p3 = p2.rotate90(false);
+        p3.sort();
+        Polyomino p4 = p3.rotate90(false);
+        p4.sort();
+        Polyomino p5 = this.reflectV(false);
+        p5.sort();
+        Polyomino p6 = p5.rotate90(false);
+        p6.sort();
+        Polyomino p7 = p6.rotate90(false);
+        p7.sort();
+        Polyomino p8 = p7.rotate90(false);
+        p8.sort();
+        
+        if (p2.compare(best) < 0)
+            best = p2;
+        if (p3.compare(best) < 0)
+            best = p3;
+        if (p4.compare(best) < 0)
+            best = p4;
+        if (p5.compare(best) < 0)
+            best = p5;
+        if (p6.compare(best) < 0)
+            best = p6;
+        if (p7.compare(best) < 0)
+            best = p7;
+        if (p8.compare(best) < 0)
+            best = p8;
+        
+        best.seal();
+        return best.getRep().toString();
+    }   */
     public String getVUnique() {
         
         BigInteger rep1 = this.getRep();
@@ -935,6 +1197,25 @@ Size of polyomino	predominant squares	minor squares	bias
         poly = poly.rotate90(); ps.adds(poly.getRep().toString());      
         return ps;
     } 
+    public ArrayList<WCCommon> getFixedList() {
+        ArrayList<WCCommon> ret = new ArrayList<>();
+        ret.add(this);
+        Polyomino r90 = this.rotate90();
+        ret.add(r90);
+        r90 = r90.rotate90();
+        ret.add(r90);
+        r90 = r90.rotate90();
+        ret.add(r90);
+        Polyomino v = this.reflectV();
+        ret.add(v);
+        r90 = v.rotate90();
+        ret.add(r90);
+        r90 = r90.rotate90();
+        ret.add(r90);
+        r90 = r90.rotate90();
+        ret.add(r90);
+        return ret;
+    }
     public PolySet getRotations() {
         
         PolySet ps = new PolySet();
@@ -1682,9 +1963,28 @@ Size of polyomino	predominant squares	minor squares	bias
         int qq = 1 / 0;
         return getHeight();
     }
+    public int countBottom() {
+        return countY(1);
+    }
+    public int countTop() {
+        return countY(getHeight());
+    }
+    public int countLeft() {
+        return countX(1);
+    }
+    public int countRight() {
+        return countX(getWidth());
+    }
     public int countX(int x) {
         int ret = 0;
         for (int y = 1; y <= getHeight(); y++)
+            if (contains(x, y))
+                ret++;
+        return ret;
+    }
+    public int countY(int y) {
+        int ret = 0;
+        for (int x = 1; x <= getWidth(); x++)
             if (contains(x, y))
                 ret++;
         return ret;

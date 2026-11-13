@@ -32,6 +32,8 @@ import java.awt.*;
  * 
  * So each node of the polyedge is a square of the polyomino such that x+y mod 2 = 0,
  * and each edge is a square such that x+y mod 2 = 1; if x is odd then the edge is vertical, if even then horizontal
+ * 
+ * IT WOULD BE MUCH SIMPLER if only the edge squares were present, as the node squares are implicit
  */
 public class Polyedge extends Polyomino {
     public Polyedge(BigInteger inValue) {

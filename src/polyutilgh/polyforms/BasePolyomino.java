@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.math.*;
+import polyutilgh.Coord;
 import polyutilgh.CoordPair;
 import polyutilgh.Edge;
 import polyutilgh.GraphicsParameters;
@@ -19,6 +20,8 @@ public abstract class BasePolyomino extends PolyformWC {
     double centreX, centreY, diameter;
     double centreX2, centreY2, diameter2;
     boolean displayCentre;
+    int deltaX[] =  {0, 1, 0, -1}; // maintain order
+    int deltaY[] =  {1, 0, -1, 0};    
     public BasePolyomino() {
         
     }
@@ -39,6 +42,11 @@ public abstract class BasePolyomino extends PolyformWC {
             }
         }        
     }    
+    public  Coord getNewCoord(Coord c, int i) {
+        CoordPair cp = (CoordPair)c;
+        return cp.add(deltaX[i], deltaY[i]);
+        
+    }
     abstract public boolean areAdjacent(CoordPair cp1, CoordPair cp2);
     public ConnectedGraph getConnectednessGraph(boolean seal) {
         ConnectedGraph ret = new ConnectedGraph();
@@ -65,6 +73,10 @@ public abstract class BasePolyomino extends PolyformWC {
         }
         return ((x + y - 1)*(x + y - 2)/2) + y - 1;
     }
+    public  int getNumberOfAdjacentCells() {
+        return 4;
+    }
+    
     public int lowest(int x) {
         for (int y = 1 ; y <= this.getHeight(); y++)
             if (this.contains(x, y))
@@ -1481,7 +1493,7 @@ R90C
         return this.shiftRight(-dx).shiftUp(-dy);
         
     }
-    public BasePolyomino align(boolean seal) {
+    public WCCommon align(boolean seal) {
         int dx = this.getMinX() - 1;
         int dy = this.getMinY() - 1;
         BasePolyomino p = (BasePolyomino)maker();

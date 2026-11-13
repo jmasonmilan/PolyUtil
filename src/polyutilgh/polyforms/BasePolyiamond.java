@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import polyutilgh.Coord;
 import polyutilgh.CoordPair;
 import polyutilgh.GraphicsParameters;
 import polyutilgh.PolySet;
@@ -67,6 +68,10 @@ public abstract class BasePolyiamond extends PolyformWC3 {
         sealed = true;        
     }  
     */
+    public  int getNumberOfAdjacentCells() {
+        return 3;
+    }
+    
     protected ArrayList<CoordPair> adjacentButNotContainedList(CoordPair cp) {
         ArrayList<CoordPair> ret = new ArrayList<>();
         int x = cp.getX(), y = cp.getY();
@@ -291,6 +296,25 @@ public abstract class BasePolyiamond extends PolyformWC3 {
 
         return gp.green;
     } 
+    public  Coord getNewCoord(Coord c, int i) {
+        CoordPair cp = (CoordPair)c;
+        if (cp.parity() == 0) {
+            switch(i) {
+                case 0: return cp.add(1, 0);
+                case 1: return cp.add(-1, 0);
+                case 2: return cp.add(0, -1);
+                
+            }
+        } else {
+            switch(i) {
+                case 0: return cp.add(1, 0);
+                case 1: return cp.add(-1, 0);
+                case 2: return cp.add(0, 1);
+                
+            }
+        }
+        return null;
+    }
     public PolySet genNew(int limit) {
         PolySet ps = new PolySet();
         if (this.array.size() == 0) {
@@ -610,7 +634,7 @@ public abstract class BasePolyiamond extends PolyformWC3 {
     }
     
     void display(GraphicsParameters gp, CoordPair cp) {
-        display(gp, cp, null);
+        display(gp, cp, cp.getDisplayColour());
     }
     void display(GraphicsParameters gp, CoordPair cp, Color c) {
        

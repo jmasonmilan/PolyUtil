@@ -1,6 +1,5 @@
 package polyutilgh.polyforms;
 
-import java.awt.Color;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -38,6 +37,7 @@ public class Polycube extends BasePolycube implements GenericPolycubeInterface {
         Polycube p = (Polycube)maker();
         for (CoordTriplet cp : array) {
             CoordTriplet ncp = cp.add(-dx, -dy, -dz);
+            ncp.setDisplayColour(cp.getDisplayColour());
             p.insert(ncp);
         }
         if (seal)
@@ -67,24 +67,29 @@ public class Polycube extends BasePolycube implements GenericPolycubeInterface {
         }
         return -1;
     }
-    public PolySet getBiTrisect(int number) {
-        PolySet ps = new PolySet();
-        ArrayList<Polycube> fixed = getFixedList();
-        for (Polycube f : fixed)
+    public BiTrisectableReturn getBiTrisect(int number, boolean optim) {
+        BiTrisectableReturn btr = new BiTrisectableReturn();
+        PolySet ps = btr.getPS();
+        ArrayList<WCCommon> fixed = getFixedList();
+        for (WCCommon fp : fixed) {
+            Polycube f = (Polycube)fp;
             getBiTrisect(ps, f);
+        }
         
         for (int n = 3; n <= number; n++) {
             PolySet nps = new PolySet();
             for (int i = 0; i < ps.size(); i++) {
                 String s = ps.gets(i);
                 Polycube p = new Polycube(new BigInteger(s));
-                for (Polycube f : fixed)
-                    p.getBiTrisect(nps, f);
+                for (Polyform fp : fixed) {
+                    Polycube f = (Polycube)fp;
+                    getBiTrisect(nps, f);
+                }
             }
-            ps = nps;
+            btr.ps = nps;
         }
         
-        return ps;
+        return btr;
     }
     void getBiTrisect(PolySet ps, Polycube f) {
         ArrayList<CoordTriplet> first = new ArrayList<>();
@@ -205,7 +210,7 @@ public class Polycube extends BasePolycube implements GenericPolycubeInterface {
         ret.seal();
         return ret;        
     }
-    
+    /*
     public ArrayList<Polycube> getFixedList() {
         ArrayList<Polycube> ret = new ArrayList<>();
         PolySet ps = this.getFixed();
@@ -213,6 +218,7 @@ public class Polycube extends BasePolycube implements GenericPolycubeInterface {
             ret.add(new Polycube(new BigInteger(ps.gets(i))));
         return ret;
     }
+    */
     public PolySet getFixed() {
         
         PolySet ps = new PolySet();

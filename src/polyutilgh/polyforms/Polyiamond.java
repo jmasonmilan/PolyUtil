@@ -3,6 +3,7 @@ package polyutilgh.polyforms;
 import java.awt.Color;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import polyutilgh.Coord;
 import polyutilgh.CoordPair;
 import polyutilgh.GraphicsParameters;
 import polyutilgh.PolySet;
@@ -57,7 +58,9 @@ public class Polyiamond extends BasePolyiamond {
             dx++;
         Polyiamond p = (Polyiamond)maker();
         for (CoordPair cp : array) {
-            p.insert(cp.add(-dx, -dy));
+            CoordPair ncp = cp.add(-dx, -dy);
+            ncp.setDisplayColour(cp.getDisplayColour());
+            p.insert(ncp);
         }
         p.adjustToSextant60();
         if (seal)
@@ -628,6 +631,12 @@ public class Polyiamond extends BasePolyiamond {
         np.adjustToSextant60();
         np.seal();
         return np;        
+    }
+    
+    public boolean occupyable(Coord c, Coord d) {
+        CoordPair oc = (CoordPair)c;
+        CoordPair od = (CoordPair)d;
+        return oc.parity() == od.parity();
     }
     public PolySet getFixed() {
         

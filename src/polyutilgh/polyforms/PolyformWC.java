@@ -8,11 +8,11 @@ import polyutilgh.GraphicsParameters;
 import polyutilgh.PolySet;
 import polyutilgh.Propagator;
 import java.awt.Color;
-import polyutilgh.Runner;
+import polyutilgh.*;
 /**
  *
  * @author jmason
- * Polyform with coordinate set
+ * 2D Polyform with coordinate set
  */
 public abstract class PolyformWC extends  WCCommon  {
     PolyformWC[] colourArray;
@@ -25,7 +25,9 @@ public abstract class PolyformWC extends  WCCommon  {
     public PolyformWC() {
         
     }
-   
+    public  boolean contains(Coord c) {
+        return contains((CoordPair)c);
+    }
     public ArrayList<CoordPair> getArray() {
         return array;
     }  
@@ -237,6 +239,9 @@ public abstract class PolyformWC extends  WCCommon  {
     public CoordPair getCoords(int i) {
         return array.get(i);
     }
+    public Coord getC(int i) {
+        return getCoords(i);
+    }
     /**
      * 
      * @param cp
@@ -349,7 +354,7 @@ public abstract class PolyformWC extends  WCCommon  {
         for (CoordPair cp : array)
             if (!cp.equals(before))
                 p.insert(cp);
-        p = (p.align(seal));
+        p = (PolyformWC)(p.align(seal));
         
         return p;
     }
@@ -360,11 +365,11 @@ public abstract class PolyformWC extends  WCCommon  {
             p.insert(cp);
         p.insert(after);
         
-        p = (p.align(seal));
+        p = (PolyformWC)(p.align(seal));
         
         return p;
     }
-    public PolyformWC align(boolean seal) {
+    public WCCommon align(boolean seal) {
         Runner.notImplemented("PolyformWC align");
         return null;
     }
@@ -560,6 +565,7 @@ public abstract class PolyformWC extends  WCCommon  {
         return 1;
     }    
     void setFirstSquare() {
+        /* removed for speed; re-introduce only if necessary and WHEN necessary
         if (array.size() == 0)
             return ;
         int x = 1, y = 1;
@@ -577,7 +583,8 @@ public abstract class PolyformWC extends  WCCommon  {
                 x = y;
                 y = 1;
             }
-        }            
+        }      
+*/
     }
     public CoordPair getFirstSquare() {
         return fcp;         
@@ -665,6 +672,9 @@ public abstract class PolyformWC extends  WCCommon  {
         Runner.notImplemented("canonise");
         return null;
     }
+    public  void insert(Coord c) {
+        insert((CoordPair)c);
+    }
     public PolyformWC copy() {
         
         PolyformWC np = copy(0, 0); // thsi avoids problems with alignment
@@ -692,8 +702,11 @@ public abstract class PolyformWC extends  WCCommon  {
     }
     public PolyformWC copy(int dx, int dy) {
         PolyformWC np = (PolyformWC)(maker());
-        for (CoordPair cp : array)
-            np.insert(new CoordPair(cp.getX() + dx, cp.getY() + dy, cp.getColour()));
+        for (CoordPair cp : array) {
+            CoordPair ncp = new CoordPair(cp.getX() + dx, cp.getY() + dy, cp.getColour());
+            ncp.setDisplayColour(cp.getDisplayColour());
+            np.insert(ncp);
+        }
         return np;
     }
     int countIf(int x, int y) {

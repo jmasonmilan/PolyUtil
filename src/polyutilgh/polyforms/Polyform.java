@@ -52,7 +52,16 @@ public abstract class Polyform  {
     public abstract int getWidth() ;
     public abstract int getHeight() ;   
     public abstract void displayOnJpeg(GraphicsParameters gp);
-    public PolySet getBiTrisect(int number) { return null; }
+    public BiTrisectableReturn getBiTrisect(int number, boolean optim) { return null; }
+    // bad method that loses colouring
+    public ArrayList<WCCommon> getFixedList() {
+        PolySet ps = getFixed();
+        ArrayList<WCCommon> ret = new ArrayList<>();
+        for (int i = 0; i < ps.size(); i++)
+            ret.add((WCCommon)(maker(ps.gets(i))));
+        return ret;
+    }
+    //public BiTrisectableReturn getMultiple(int number) { return null; }
     public  PolySet genNewWay() { int qq = 1 / 0; return null; }
     public  PolySet genNewWay(boolean list) { int qq = 1 / 0; return null; }
     public int getPixelWidth(GraphicsParameters gp) { return getWidth() * gp.edgeLength; }

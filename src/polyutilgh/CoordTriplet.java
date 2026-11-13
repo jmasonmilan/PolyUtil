@@ -9,7 +9,7 @@ import polyutilgh.polyforms.Polyform;
 public class CoordTriplet extends Coord {
     
     private int x, y, z;
-    private int colour;
+    
    
     public CoordTriplet(int inX, int inY, int inZ) {
         x = inX; 
@@ -175,14 +175,21 @@ public class CoordTriplet extends Coord {
             return 0;
                     
     }
+    public Coord add(Coord c) {
+        return add((CoordTriplet)c);
+    }
+    public Coord subtract(Coord c) {
+        return subtract((CoordTriplet)c);
+    }
+    
     public CoordTriplet add(CoordTriplet delta) {
         return new CoordTriplet(x + delta.getX(), y + delta.getY(), z + delta.getZ());
     }
+    public CoordTriplet subtract(CoordTriplet delta) {
+        return new CoordTriplet(x - delta.getX(), y - delta.getY(), z - delta.getZ());
+    }
     public CoordTriplet add(int dx, int dy, int dz) {
         return new CoordTriplet(x + dx, y + dy, z + dz);
-    }
-    public CoordTriplet subtract(CoordTriplet other) {
-        return new CoordTriplet(getX() - other.getX(), getY() - other.getY(), getZ() - other.getZ());
     }
     public int whichIsZero() {
         if (x == 0)

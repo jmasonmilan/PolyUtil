@@ -8,9 +8,9 @@ import java.awt.Color;
 public class CoordPair extends Coord {
     
     private int x, y;
-    private int colour;
+    
     private String letter = "O";
-    Color displayColour;
+    
     //private CoordPair previous, next; // use in rings
     public CoordPair(int inX, int inY) {
         x = inX; 
@@ -49,6 +49,8 @@ public class CoordPair extends Coord {
         return ((x + y - 1)*(x + y - 2)/2) + y - 1;
     }
     */
+    
+    
     public void setLetter(String letter) {
         this.letter = letter;
     }
@@ -66,6 +68,18 @@ public class CoordPair extends Coord {
     public boolean equals(Object o) {
         CoordPair other = (CoordPair)o;
         return (x == other.getX()) && (y == other.getY()) ;
+    }
+    public int compare(CoordPair other) {
+        
+        if (x < other.x)
+            return -1;
+        if (x > other.x)
+            return 1;
+        if (y < other.y)
+            return -1;
+        if (y > other.y)
+            return 1;
+        return 0;
     }
     public CoordPair nextAlong(int side) {
         int nx = this.x;
@@ -96,17 +110,22 @@ public class CoordPair extends Coord {
     public int getColour() {
         return this.colour;
     }
-    public void setDisplayColour(Color value) {
-        this.displayColour = value;
+    public Coord add(Coord c) {
+        return add((CoordPair)c);
     }
-    public Color getDisplayColour() {
-        return this.displayColour;
+    public Coord subtract(Coord c) {
+        return subtract((CoordPair)c);
     }
     public CoordPair add(CoordPair dc) {
         return new CoordPair(x + dc.x , y + dc.y);
     }
+    public CoordPair subtract(CoordPair dc) {
+        return new CoordPair(x - dc.x , y - dc.y);
+    }
     public CoordPair add(int dx, int dy) {
-        return new CoordPair(x + dx , y + dy);
+        CoordPair ret = new CoordPair(x + dx , y + dy);
+        ret.setDisplayColour(displayColour);
+        return ret;
     }
    
     public boolean isPolyedgeNode() {
@@ -125,6 +144,7 @@ public class CoordPair extends Coord {
         CoordPair nct = new CoordPair(x, y, colour);
         if (this.flaggedForDisplay)
             nct.setFlag();
+        nct.displayColour = this.displayColour;
         return nct;
     }    
     // both this and ocp are assumed polyedge edges

@@ -134,13 +134,7 @@ public class PolySet {
         String s = poly.getUnique();
         
         
-        if (s.equals("8857199")) {
-            
-            System.err.println("ps " + call + " " + s.toString());
-            System.err.println("father " + father.getRep().toString());
-            int dbg = 1;
-            
-        }
+        
 
         if (mustBeSize != 0 && mustBeSize != poly.size()) {
             System.err.println("expected " + mustBeSize + " but found " + poly.size());

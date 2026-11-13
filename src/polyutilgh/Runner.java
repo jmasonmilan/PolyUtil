@@ -47,11 +47,24 @@ public class Runner {
         }
         
         for (int i = args.length - 2 ; i > 0 ; i--) {
+            String[] bits;
+            int pos = args[i].indexOf(":");
+            if (pos < 0) {
+                bits = new String[1];
+                bits[0] = args[i];
+            }
+            else {
+                bits = new String[2];
+                bits[0] = args[i].substring(0, pos);
+                bits[1] = args[i].substring(pos + 1);
+            }
+            /*
             String[] bits = args[i].split(":");
             if (bits.length > 2) {
                 System.err.println("bad filter " + args[i]);
                 System.exit(1);
             }
+            */
             String params;
             if (bits.length == 1)
                 params = "";

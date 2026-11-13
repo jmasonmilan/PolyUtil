@@ -17,10 +17,12 @@ public class ReaderMaker {
     public InReader make(String reader, Filter nextOneParam, String params) {
         Object object = null;
         String first = reader.substring(0, 1);
+        /*
         if (!first.equals(first.toUpperCase())) {
             System.err.println("First letter not uppercase : " + reader);
             System.exit(1);
-        }
+        } */
+        reader = first.toUpperCase() + reader.substring(1);
         try {
             Class<?> c = Class.forName("polyutilgh.readers." + reader + "Reader");
             Constructor<?> cons;

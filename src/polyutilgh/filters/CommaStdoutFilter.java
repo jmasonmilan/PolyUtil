@@ -16,7 +16,7 @@ public class CommaStdoutFilter extends OnlyRepFilter {
     
     String ret  = "";
     
-    public CommaStdoutFilter(Filter nextOneParam) {
+    public CommaStdoutFilter(Filter nextOneParam, String params) {
         super(nextOneParam);
        
         

@@ -387,8 +387,16 @@ public class ConditionFilter extends OnlyPolyFilter {
             BasePolyomino poly = (BasePolyomino)inPoly;
             String found = poly.getCategoryLetter();
             String seeking = pa.getStringValue("letter");
-            if (found.equals(seeking))          
-                return innerWrite(count++, inPoly);
+            boolean not = false;
+            if (seeking.startsWith("!"))
+                not = true;
+            if (not == false) {
+                if (found.equals(seeking))          
+                    return innerWrite(count++, inPoly);
+            } else {
+                if (!found.equals(seeking.substring(1)))          
+                    return innerWrite(count++, inPoly);
+            }
             return true;       
         }
         if (pa.getStringValue("hexletter") != null) { 

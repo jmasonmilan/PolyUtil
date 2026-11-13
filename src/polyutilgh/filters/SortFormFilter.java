@@ -11,7 +11,7 @@ import polyutilgh.polyforms.*;
  */
 public class SortFormFilter extends OnlyPolyFilter {
     ArrayList<BigInteger> array[];
-    public SortFormFilter(Filter nextOneParam) {
+    public SortFormFilter(Filter nextOneParam, String params) {
         super(nextOneParam);
         array = new ArrayList[99]; // inelegant but sufficient
        

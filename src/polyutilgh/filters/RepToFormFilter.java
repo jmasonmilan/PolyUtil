@@ -11,7 +11,7 @@ import java.lang.reflect.InvocationTargetException;
  * @author jmason
  * convert representation to polyform
  */
-public  class RepToFormFilter extends RepFilter {
+public  class RepToFormFilter extends OnlyRepFilter {
     String form;
     boolean multi;
     int[] ss;
@@ -32,29 +32,8 @@ public  class RepToFormFilter extends RepFilter {
     }
     public boolean write(long n, BigInteger rep) {
         Polyform poly = null;
-        if (rep.toString().equals("1144056238563172736")) {
-            int dbgg = 1;
-        }
-        /*
-        if (form.equals("Polyomino")) poly = new Polyomino(rep); else
-        if (form.equals("SAPolygon")) poly = new SAPolygon(rep); else
-        if (form.equals("CBPolyomino")) poly = new CBPolyomino(rep); else
-        if (form.equals("PerimeterPolyomino")) poly = new PerimeterPolyomino(rep); else
-        if (form.equals("PerimeterPolyiamond")) poly = new PerimeterPolyiamond(rep); else
-        if (form.equals("Polyiamond")) poly = new Polyiamond(rep); else
-        if (form.equals("CBPolyhex")) poly = new CBPolyhex(rep); else
-        if (form.equals("Polyhex")) poly = new Polyhex(rep); else
-        if (form.equals("Polyrect")) poly = new Polyrect(rep); else
-        if (form.equals("Polycombo")) poly = new Polycombo(rep, ss); else
-        if (form.equals("SideView")) poly = new SideView(rep); else
-        if (form.equals("CompleteView")) poly = new CompleteView(rep); else
-        if (form.equals("SAP")) poly = new SAPolygon(rep); else
-        if (form.equals("CBPolyiamond")) poly = new CBPolyiamond(rep); else {
-            System.err.println("bad form " + form);
-            System.exit(1);
-        }
-*/
-        //String myClassName = CompleteView.class.getName();
+        
+       
         Object object = null;
         try {
             Class<?> c = Class.forName("polyutilgh.polyforms." + form);
@@ -76,9 +55,7 @@ public  class RepToFormFilter extends RepFilter {
         if (multi) {
             p = p.multiMaker();
         }
-        if (rep.toString().equals("1144056238563172736")) {
-            int dbg = 1;
-        }
+        
         return nextOne.write(count++, p);
           
     }     

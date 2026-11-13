@@ -9,7 +9,7 @@ import java.math.BigInteger;
  */
 public class RepFilter extends OnlyPolyFilter {
     
-    public RepFilter(Filter nextOneParam) {
+    public RepFilter(Filter nextOneParam, String params) {
         super(nextOneParam);
        
     }

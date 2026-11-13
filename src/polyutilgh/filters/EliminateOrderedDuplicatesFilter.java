@@ -9,7 +9,7 @@ import java.math.BigInteger;
 public class EliminateOrderedDuplicatesFilter extends OnlyRepFilter {
     String previous = "";
     long countE = 0;
-    public EliminateOrderedDuplicatesFilter(Filter nextOneParam) {
+    public EliminateOrderedDuplicatesFilter(Filter nextOneParam, String params) {
         super(nextOneParam);
         
        

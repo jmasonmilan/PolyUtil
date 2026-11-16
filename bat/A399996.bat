@@ -5,7 +5,21 @@ rem for x from 0 to 99. See A246521 for the format of the input.
 rem It requires some adjustment according to local path conventions
 rem The folder D:\Bisect (or whatever replaces it) must already exist.
 rem The same goes for the "various" folder.
-rem D:\Bisect may require about 400GB ofd free space.
+rem D:\Bisect may require about 400GB of free space.
+rem Phase 1: output to disk all the composed polyominoes of size 2n
+rem Phase 2: sort and merge the output files
+rem Phase 3: perform individual counts
+rem Phase 4: sum all the counts
+rem
+rem Note that Phase 1 counts separately polyominoes of size 2n formed from
+rem a single asymmetrical polyomino of size n such that the 2 halves meet at
+rem only one edge. These counts go into the optim files and so reduce the
+rem amount of data that needs to be sorted.
+rem
+rem In Phase 1, the "Hundred" filter outputs separate files according to the 
+rem last 2 digits of the representation of the composed polyomino. This
+rem means that we have to work with a lot of medium sized files instead of
+rem 1 enormous one.
 rem
 java -jar "dist\PolyUtilGH.jar" stdinToRep repToForm:form=Polyomino only:from=1,to=17 biTrisectable:num=2,optim=true,usefixed=false,optimfile=various\optim-0.txt hundred:nolineno=true,prefix=D:\Bisect\out-0 INPUT\free1-17-0.txt
 java -jar "dist\PolyUtilGH.jar" stdinToRep repToForm:form=Polyomino only:from=1,to=17 biTrisectable:num=2,optim=true,usefixed=false,optimfile=various\optim-1.txt hundred:nolineno=true,prefix=D:\Bisect\out-1 INPUT\free1-17-1.txt
